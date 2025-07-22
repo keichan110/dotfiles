@@ -82,5 +82,6 @@
     ],
     "deny": []
   },
-  "cleanupPeriodDays": 60
+  "cleanupPeriodDays": 60,
+  "includeCoAuthoredBy": false
 }
