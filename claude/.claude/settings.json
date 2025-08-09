@@ -78,10 +78,14 @@
       "Bash(git log:*)",
       "Bash(git diff:*)",
       "Bash(git fetch:*)",
-      "Bash(git pull:--ff-only *)"
+      "Bash(git pull:--ff-only *)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run test:*)"
     ],
     "deny": []
   },
+  "enabledMcpjsonServers": ["github"],
   "cleanupPeriodDays": 60,
   "includeCoAuthoredBy": false
 }
