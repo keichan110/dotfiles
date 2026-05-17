@@ -42,6 +42,7 @@ opt.guifont = "PlemolJP:h14.5,HackGen:h14.5,Cica:h14.5"
 opt.linespace = 5 -- lineHeight: 1.85 to approximate linespace
 
 -- File handling
+opt.autoread = true -- 外部変更を検知した際に自動リロード（checktimeと組み合わせて使用）
 opt.autowrite = false
 opt.autowriteall = false
 
