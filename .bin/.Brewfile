@@ -4,6 +4,7 @@ cask_args appdir: "/Applications"
 # Library
 tap "homebrew/bundle"
 tap "homebrew/cask-fonts"
+tap manaflow-ai/cmux
 
 # CLI App
 brew "git"
@@ -38,6 +39,7 @@ cask "alacritty"
 cask "wezterm"
 cask "cursor"
 cask "obsidian"
+cask "cmux"
 
 # Font
 cask "font-hackgen"
