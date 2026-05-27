@@ -32,6 +32,15 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
+-- Markdownのマークアップ記号をそのまま表示
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("markdown_conceal", { clear = true }),
+  pattern = "markdown",
+  callback = function()
+    vim.opt_local.conceallevel = 0
+  end,
+})
+
 -- Trim final newlines on save (VSCode: files.trimFinalNewlines)
 vim.api.nvim_create_autocmd("BufWritePre", {
   group = vim.api.nvim_create_augroup("trim_final_newlines", { clear = true }),
