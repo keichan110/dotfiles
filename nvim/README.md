@@ -22,6 +22,9 @@ nvim/.config/nvim/
 ## プラグイン（plugins/）
 | ファイル | 設定内容 |
 |---|---|
-| `colorscheme.lua` | nord テーマを追加し LazyVim のデフォルトとして設定 |
+| `accelerated-jk.lua` | j/k キーによる加速スクロール |
+| `colorscheme.lua` | nord テーマを追加し LazyVim のデフォルトとして設定、インデントラインのハイライト調整 |
+| `disable-themes.lua` | 不要なテーマ（catppuccin、tokyonight）を無効化 |
+| `example.lua` | LazyVim 公式サンプルスペック（無効化済み） |
+| `scrollbar.lua` | スクロールバーを表示（git 差分・検索・診断情報対応） |
 | `snacks.lua` | Explorer で隠しファイルを常に表示 |
-| `disable-themes.lua` | 不要なテーマを無効化 |
