@@ -3,3 +3,6 @@
 -- Add any additional keymaps here
 
 vim.keymap.set({ "n", "i", "v" }, "<leader>w", "<cmd>w<cr>", { desc = "Save file" })
+
+vim.keymap.set("n", ";", ":", { desc = "Enter command mode" })
+vim.keymap.set("n", ":", ";", { desc = "Repeat f/t motion" })
