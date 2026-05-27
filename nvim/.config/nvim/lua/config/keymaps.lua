@@ -12,5 +12,8 @@ vim.keymap.set("n", "N", "'nN'[v:searchforward].'zz'", { expr = true, desc = "Pr
 vim.keymap.set("n", "*", "*zz", { desc = "Search word under cursor and center" })
 vim.keymap.set("n", "#", "#zz", { desc = "Search word under cursor backward and center" })
 
+vim.keymap.set("n", "<leader>h", "^", { desc = "Go to first non-blank character" })
+vim.keymap.set("n", "<leader>l", "$", { desc = "Go to end of line" })
+
 vim.keymap.set("n", ";", ":", { desc = "Enter command mode" })
 vim.keymap.set("n", ":", ";", { desc = "Repeat f/t motion" })
