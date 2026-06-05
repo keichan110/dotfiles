@@ -8,6 +8,7 @@ path=(
   /usr/local/bin(N-/)
   /usr/local/sbin(N-/)
   /Library/Apple/usr/bin
+  ~/.local/bin
 )
 
 [[ ! -f ~/.zaliases ]] || source ~/.zaliases # import aliases
