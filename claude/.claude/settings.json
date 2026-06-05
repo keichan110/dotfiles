@@ -1,6 +1,6 @@
 {
   "hooks": {
-    "PreToolUse": [
+    "UserPromptSubmit": [
       {
         "hooks": [
           { "type": "command", "command": "~/.claude/set-wezterm-status.sh working" }
