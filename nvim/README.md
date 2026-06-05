@@ -2,6 +2,10 @@
 
 [LazyVim](https://www.lazyvim.org/) ベースの Neovim 設定。
 
+## チートシート
+
+- [KEYMAPS.md](./KEYMAPS.md) — よく使うキーバインディング一覧
+
 ## 構成
 
 ```
