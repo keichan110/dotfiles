@@ -1,4 +1,27 @@
 {
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          { "type": "command", "command": "~/.claude/set-wezterm-status.sh working" }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          { "type": "command", "command": "~/.claude/set-wezterm-status.sh waiting" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "~/.claude/set-wezterm-status.sh done" }
+        ]
+      }
+    ]
+  },
   "cleanupPeriodDays": 60,
   "includeCoAuthoredBy": false,
   "permissions": {

@@ -114,4 +114,61 @@ wezterm.on("toggle-opacity", function(window)
   window:set_config_overrides(overrides)
 end)
 
+-- Claude Code のステータスに応じてタブ背景色を変更する
+-- Claude Code hooks がファイルにステータスを書き、WezTerm が io.open() で読む
+
+local CLAUDE_STATUS_DIR = '/tmp/claude-wezterm-status-'
+
+local CLAUDE_STATUS_COLORS = {
+  working = '#5E81AC', -- Nord blue
+  waiting = '#EBCB8B', -- Nord yellow
+  done    = '#A3BE8C', -- Nord green
+}
+
+local function read_claude_status(pane_id)
+  local f = io.open(CLAUDE_STATUS_DIR .. pane_id, 'r')
+  if not f then return nil end
+  local s = f:read('*l')
+  f:close()
+  return (s and s ~= '') and s or nil
+end
+
+local function clear_claude_status(pane_id)
+  local f = io.open(CLAUDE_STATUS_DIR .. pane_id, 'w')
+  if f then f:close() end
+end
+
+-- update-status は毎秒発火し、set_right_status が format-tab-title の再評価をトリガーする
+wezterm.on('update-status', function(window, pane)
+  window:set_right_status(wezterm.strftime('%H:%M:%S'))
+end)
+
+wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
+  local pane_id = tab.active_pane.pane_id
+  local status = read_claude_status(pane_id)
+
+  if not status then return nil end
+
+  -- フォーカスが戻ったタブの完了状態をクリアしてデフォルト色に戻す
+  if status == 'done' and tab.is_active then
+    clear_claude_status(pane_id)
+    return nil
+  end
+
+  local bg = CLAUDE_STATUS_COLORS[status]
+  if not bg then return nil end
+
+  local title = tab.tab_title
+  if not title or title == '' then
+    title = tab.active_pane.title
+  end
+
+  return {
+    { Background = { Color = bg } },
+    { Foreground = { Color = '#2E3440' } },
+    { Attribute = { Intensity = tab.is_active and 'Bold' or 'Normal' } },
+    { Text = ' ' .. title .. ' ' },
+  }
+end)
+
 return config
