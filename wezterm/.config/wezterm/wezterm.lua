@@ -140,7 +140,10 @@ end
 
 -- update-status は毎秒発火し、set_right_status が format-tab-title の再評価をトリガーする
 wezterm.on('update-status', function(window, pane)
-  window:set_right_status(wezterm.strftime('%H:%M:%S'))
+  window:set_right_status(wezterm.format({
+    { Foreground = { Color = '#616E88' } },
+    { Text = wezterm.strftime(' %H:%M:%S ') },
+  }))
 end)
 
 wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
