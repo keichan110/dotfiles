@@ -1,18 +1,21 @@
-# cd
-alias ..='cd ..'
-alias ..2='cd ../..'
-alias ..3='cd ../../..'
-# grep
-alias grep="grep --color"
-# confirm
-alias cp='cp -i'
-alias mv='mv -i'
-alias rm='rm -i'
-# 1word
-alias c='clear'
-alias g='git'
-alias q='exit'
-# bat
-alias cat='bat -p --theme Nord'
-# eza
-alias ls='eza'
+# 人間が直接操作するターミナルでのみ有効（Claude Codeなどの自動ツールでは無効）
+if [[ -t 1 ]]; then
+  # cd
+  alias ..='cd ..'
+  alias ..2='cd ../..'
+  alias ..3='cd ../../..'
+  # grep
+  alias grep="grep --color"
+  # confirm
+  alias cp='cp -i'
+  alias mv='mv -i'
+  alias rm='rm -i'
+  # 1word
+  alias c='clear'
+  alias g='git'
+  alias q='exit'
+  # bat
+  alias cat='bat -p --theme Nord'
+  # eza
+  alias ls='eza'
+fi
