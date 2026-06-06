@@ -5,6 +5,7 @@ input=$(cat)
 
 # --- Model ---
 model=$(echo "$input" | jq -r '.model.display_name // "Unknown"')
+effort=$(echo "$input" | jq -r '.model.effort // empty')
 
 # $1 = percentage (0-100), $2 = number of segments
 make_bar() {
@@ -36,10 +37,15 @@ branch=$(git -C "$(echo "$input" | jq -r '.workspace.current_dir // "."')" \
   --no-optional-locks rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 
 # --- Line 1 ---
-if [ -n "$branch" ]; then
-  line1="[${model}] ${ctx_display} | ${branch}"
+if [ -n "$effort" ]; then
+  model_str="${model} (${effort})"
 else
-  line1="[${model}] ${ctx_display}"
+  model_str="${model}"
+fi
+if [ -n "$branch" ]; then
+  line1="[${model_str}] ${ctx_display} | ${branch}"
+else
+  line1="[${model_str}] ${ctx_display}"
 fi
 
 # --- Rate limits (5 segments each) ---
