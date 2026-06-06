@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# フラグの解析
+YES=false
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -y|--yes) YES=true; shift ;;
+    -h|--help)
+      echo "Usage: git clean-branches [-y]"
+      echo "  -y, --yes  確認プロンプトをスキップ"
+      exit 0
+      ;;
+    *) echo "不明なオプション: $1"; exit 1 ;;
+  esac
+done
+
+# gitリポジトリ内でなければ終了
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+  echo "Error: gitリポジトリ内で実行してください" >&2
+  exit 1
+fi
+
+# デフォルトブランチを決定（.git/config > フォールバック: main）
+default_branch=$(git config branch-clean.defaultBranch 2>/dev/null || echo "main")
+
+# 削除除外ブランチのリストを構築
+current_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
+protected=("main" "develop" "master")
+if [[ -n "$current_branch" ]]; then
+  protected+=("$current_branch")
+fi
+# .git/config の branch-clean.protected からリポジトリ固有の除外ブランチを追加
+while IFS= read -r branch; do
+  [[ -n "$branch" ]] && protected+=("$branch")
+done < <(git config --get-all branch-clean.protected 2>/dev/null || true)
+
+is_protected() {
+  local b="$1"
+  for p in "${protected[@]}"; do
+    [[ "$b" == "$p" ]] && return 0
+  done
+  return 1
+}
+
+# リモート追跡ブランチの整理
+echo "==> git fetch --prune を実行中 ..."
+git fetch --prune
+
+# デフォルトブランチにマージ済みのローカルブランチを収集
+merged_branches=()
+while IFS= read -r branch; do
+  branch="${branch#  }"   # 先頭の空白を除去
+  branch="${branch#\* }"  # 現在ブランチの "* " マーカーを除去（念のため）
+  is_protected "$branch" && continue
+  merged_branches+=("$branch")
+done < <(git branch --merged "$default_branch" 2>/dev/null || true)
+
+if [[ ${#merged_branches[@]} -eq 0 ]]; then
+  echo "No local branches to delete (merged into '$default_branch')."
+  exit 0
+fi
+
+echo ""
+echo "The following local branches are merged into '$default_branch' and will be deleted:"
+for b in "${merged_branches[@]}"; do
+  echo "  - $b"
+done
+echo ""
+
+if [[ "$YES" == false ]]; then
+  read -r -p "Delete these branches? [y/N] " answer
+  case "$answer" in
+    [yY][eE][sS]|[yY]) ;;
+    *) echo "Aborted."; exit 0 ;;
+  esac
+fi
+
+for b in "${merged_branches[@]}"; do
+  git branch -d "$b"
+  echo "Deleted: $b"
+done
+
+echo ""
+echo "Done."
