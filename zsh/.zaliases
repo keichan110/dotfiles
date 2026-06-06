@@ -18,4 +18,6 @@ if [[ -t 1 ]]; then
   alias cat='bat -p --theme Nord'
   # eza
   alias ls='eza'
+  # bat
+  alias cat='bat'
 fi
