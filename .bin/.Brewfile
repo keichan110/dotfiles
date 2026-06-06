@@ -27,6 +27,7 @@ brew "ripgrep"
 brew "procs"
 brew "mise"
 brew "starship"
+brew "zoxide"
 
 # Desktop App
 cask "visual-studio-code"
