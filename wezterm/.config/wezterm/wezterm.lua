@@ -127,9 +127,8 @@ wezterm.on('toggle-opacity', function(window)
 end)
 
 -- Claude Code のステータスに応じてタブ背景色を変更する
--- Claude Code hooks がファイルにステータスを書き、WezTerm が io.open() で読む
+-- Claude Code hooks が OSC 1337 user var で通知し、user-var-changed イベントで受け取る
 
-local CLAUDE_STATUS_DIR = '/tmp/claude-wezterm-status-'
 local CLAUDE_STATUS_COLORS = {
   working = C.claude_work,
   waiting = C.claude_wait,
@@ -137,18 +136,25 @@ local CLAUDE_STATUS_COLORS = {
 }
 local TAB_WIDTH = 24
 
-local function read_claude_status(pane_id)
-  local f = io.open(CLAUDE_STATUS_DIR .. pane_id, 'r')
-  if not f then return nil end
-  local s = f:read('*l')
-  f:close()
-  return (s and s ~= '') and s or nil
-end
+-- ペインIDごとの状態 { status = "working"|"waiting"|"done", epoch = number }
+local claude_states = {}
 
-local function clear_claude_status(pane_id)
-  local f = io.open(CLAUDE_STATUS_DIR .. pane_id, 'w')
-  if f then f:close() end
-end
+-- user-var-changed: OSC 1337 SetUserVar=claude_state=... を受け取る
+wezterm.on('user-var-changed', function(window, pane, name, value)
+  if name ~= 'claude_state' then return end
+  local pane_id = pane:pane_id()
+  if value == '' then
+    claude_states[pane_id] = nil
+  else
+    local ok, decoded = pcall(wezterm.base64_decode, value)
+    if ok and decoded then
+      local status, epoch = decoded:match('^(.+):(%d+)$')
+      if status then
+        claude_states[pane_id] = { status = status, epoch = tonumber(epoch) }
+      end
+    end
+  end
+end)
 
 -- update-status は毎秒発火し、format-tab-title の再評価をトリガーする
 wezterm.on('update-status', function(window, pane)
@@ -160,11 +166,12 @@ end)
 
 wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
   local pane_id = tab.active_pane.pane_id
-  local status = read_claude_status(pane_id)
+  local state = claude_states[pane_id]
+  local status = state and state.status
 
   -- フォーカスが戻ったタブの完了・待機状態をクリアしてデフォルト色に戻す
   if status and (status == 'done' or status == 'waiting') and tab.is_active then
-    clear_claude_status(pane_id)
+    claude_states[pane_id] = nil
     status = nil
   end
 

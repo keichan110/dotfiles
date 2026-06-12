@@ -20,6 +20,13 @@
           { "type": "command", "command": "~/.claude/set-wezterm-status.sh done" }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          { "type": "command", "command": "~/.claude/set-wezterm-status.sh clear" }
+        ]
+      }
     ]
   },
   "cleanupPeriodDays": 60,
