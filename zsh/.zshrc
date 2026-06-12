@@ -17,7 +17,7 @@ bindkey -e # Ctrl+AやCtrl+Bが^Aのようになる対策
 eval "$(mise activate zsh)"
 eval "$(starship init zsh)"
 
-export EDITOR='vim' # editor
+export EDITOR='nvim' # editor
 
 autoload -Uz colors ; colors # 色を使用
 autoload -Uz compinit ; compinit # 補完機能を有効
