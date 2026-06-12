@@ -17,3 +17,20 @@ vim.keymap.set("n", "<leader>l", "$", { desc = "Go to end of line" })
 
 vim.keymap.set("n", ";", ":", { desc = "Enter command mode" })
 vim.keymap.set("n", ":", ";", { desc = "Repeat f/t motion" })
+
+local function copy_path(path)
+  vim.fn.setreg("+", path)
+  vim.notify("Copied: " .. path)
+end
+
+vim.keymap.set("n", "<leader>yp", function()
+  copy_path(vim.fn.expand("%:."))
+end, { desc = "Copy relative path" })
+
+vim.keymap.set("n", "<leader>yf", function()
+  copy_path(vim.fn.expand("%:p"))
+end, { desc = "Copy full path" })
+
+vim.keymap.set("n", "<leader>yn", function()
+  copy_path(vim.fn.expand("%:t"))
+end, { desc = "Copy file name" })
