@@ -12,6 +12,8 @@ C_GREEN=$(printf '\033[32m')
 C_YELLOW=$(printf '\033[93m')
 C_ORANGE=$(printf '\033[33m')
 C_RED=$(printf '\033[31m')
+C_CYAN=$(printf '\033[36m')
+C_BLUE=$(printf '\033[34m')
 C_RESET=$(printf '\033[0m')
 
 # $1 = percentage (0-100), $2 = number of segments
@@ -27,6 +29,108 @@ make_bar() {
   i=0
   while [ "$i" -lt "$empty" ]; do b="${b}▱"; i=$(( i + 1 )); done
   printf '%s' "$b"
+}
+
+# $1=actual_pct(int), $2=resets_at(unix ts), $3=window_sec, $4=half_segs, $5=min_elapsed_sec
+# Centered pace bar based on projected total usage (actual/elapsed*window)
+# Left=under 100%(cool), right=over 100%(warm), │=center(on track to use exactly 100%)
+# Threshold-based segments:
+#   Right: 100-110 / 110-125 / 125-150 / 150-200 / 200+%
+#   Left:  100-90  / 90-75   / 75-50   / 50-25   / 25-0%
+pace_bar() {
+  actual="$1"
+  resets_ts="$2"
+  window_sec="$3"
+  half="${4:-5}"
+  min_elapsed="${5:-0}"
+
+  now=$(date +%s)
+  remaining=$(( resets_ts - now ))
+  if [ "$remaining" -lt 0 ]; then remaining=0; fi
+  if [ "$remaining" -gt "$window_sec" ]; then remaining=$window_sec; fi
+  elapsed=$(( window_sec - remaining ))
+
+  # Early window: not enough data yet, show neutral
+  if [ "$elapsed" -lt "$min_elapsed" ]; then
+    b=""; i=0; while [ "$i" -lt "$half" ]; do b="${b}▱"; i=$(( i + 1 )); done
+    printf '%s│%s' "$b" "$b"
+    return
+  fi
+
+  # Projected total usage if current pace continues
+  if [ "$elapsed" -gt 0 ]; then
+    projected=$(( actual * window_sec / elapsed ))
+  else
+    projected=100
+  fi
+
+  # Threshold-based segment count (neutral zone: projected 95-105%)
+  # Right: 105-120 / 120-133 / 133-150 / 150-175 / 175-225 / 225-300 / 300+%
+  # Left:  95-80   / 80-68   / 68-55   / 55-40   / 40-25   / 25-10   / 10-0%
+  left_filled=0
+  right_filled=0
+  if [ "$projected" -ge 105 ]; then
+    if   [ "$projected" -ge 300 ]; then right_filled=7
+    elif [ "$projected" -ge 225 ]; then right_filled=6
+    elif [ "$projected" -ge 175 ]; then right_filled=5
+    elif [ "$projected" -ge 150 ]; then right_filled=4
+    elif [ "$projected" -ge 133 ]; then right_filled=3
+    elif [ "$projected" -ge 120 ]; then right_filled=2
+    else                                 right_filled=1
+    fi
+  elif [ "$projected" -le 95 ]; then
+    if   [ "$projected" -le 10 ]; then left_filled=7
+    elif [ "$projected" -le 25 ]; then left_filled=6
+    elif [ "$projected" -le 40 ]; then left_filled=5
+    elif [ "$projected" -le 55 ]; then left_filled=4
+    elif [ "$projected" -le 68 ]; then left_filled=3
+    elif [ "$projected" -le 80 ]; then left_filled=2
+    else                               left_filled=1
+    fi
+  fi
+
+  # Determine single color for all filled segments (1 seg = no color, 2+ = colored)
+  if [ "$right_filled" -gt 0 ]; then
+    if   [ "$right_filled" -ge 6 ]; then clr="$C_RED"
+    elif [ "$right_filled" -ge 4 ]; then clr="$C_ORANGE"
+    elif [ "$right_filled" -ge 2 ]; then clr="$C_YELLOW"
+    else                                  clr=""
+    fi
+  elif [ "$left_filled" -gt 0 ]; then
+    if   [ "$left_filled" -ge 6 ]; then clr="$C_BLUE"
+    elif [ "$left_filled" -ge 4 ]; then clr="$C_CYAN"
+    elif [ "$left_filled" -ge 2 ]; then clr="$C_GREEN"
+    else                                 clr=""
+    fi
+  else
+    clr=""
+  fi
+
+  # Build left side: filled at right end (closest to center)
+  left=""
+  i=0
+  while [ "$i" -lt "$half" ]; do
+    if [ "$i" -ge $(( half - left_filled )) ]; then
+      left="${left}${clr}▰${C_RESET}"
+    else
+      left="${left}▱"
+    fi
+    i=$(( i + 1 ))
+  done
+
+  # Build right side: filled at left end (closest to center)
+  right=""
+  i=0
+  while [ "$i" -lt "$half" ]; do
+    if [ "$i" -lt "$right_filled" ]; then
+      right="${right}${clr}▰${C_RESET}"
+    else
+      right="${right}▱"
+    fi
+    i=$(( i + 1 ))
+  done
+
+  printf '%s│%s' "$left" "$right"
 }
 
 # $1 = bar string, $2 = color string
@@ -136,24 +240,30 @@ line2=""
 
 if [ -n "$five_pct" ]; then
   five_int=$(printf '%.0f' "$five_pct")
-  five_bar=$(color_bar "$(make_bar "$five_int" 10)" "$(rate_color "$five_int")")
+  five_clr=$(rate_color "$five_int")
+  five_pct_str="${five_clr:+${five_clr}}${five_int}%${five_clr:+${C_RESET}}"
   if [ -n "$five_reset" ]; then
+    five_bar=$(pace_bar "$five_int" "$five_reset" 18000 7 600)
     five_time=$(date -r "$five_reset" "+%H:%M" 2>/dev/null || date -d "@${five_reset}" "+%H:%M" 2>/dev/null || echo "")
-    five_str="5h: ${five_bar} ${five_int}% (~${five_time})"
+    five_str="5h: ${five_bar} ${five_pct_str} (~${five_time})"
   else
-    five_str="5h: ${five_bar} ${five_int}%"
+    five_bar=$(color_bar "$(make_bar "$five_int" 10)" "$(rate_color "$five_int")")
+    five_str="5h: ${five_bar} ${five_pct_str}"
   fi
   line2="${five_str}"
 fi
 
 if [ -n "$seven_pct" ]; then
   seven_int=$(printf '%.0f' "$seven_pct")
-  seven_bar=$(color_bar "$(make_bar "$seven_int" 10)" "$(rate_color "$seven_int")")
+  seven_clr=$(rate_color "$seven_int")
+  seven_pct_str="${seven_clr:+${seven_clr}}${seven_int}%${seven_clr:+${C_RESET}}"
   if [ -n "$seven_reset" ]; then
+    seven_bar=$(pace_bar "$seven_int" "$seven_reset" 604800 7 3600)
     seven_time=$(date -r "$seven_reset" "+%-m/%-d %H:%M" 2>/dev/null || date -d "@${seven_reset}" "+%-m/%-d %H:%M" 2>/dev/null || echo "")
-    seven_str="7d: ${seven_bar} ${seven_int}% (~${seven_time})"
+    seven_str="7d: ${seven_bar} ${seven_pct_str} (~${seven_time})"
   else
-    seven_str="7d: ${seven_bar} ${seven_int}%"
+    seven_bar=$(color_bar "$(make_bar "$seven_int" 10)" "$(rate_color "$seven_int")")
+    seven_str="7d: ${seven_bar} ${seven_pct_str}"
   fi
   if [ -n "$line2" ]; then
     line2="${line2} | ${seven_str}"
