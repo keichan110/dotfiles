@@ -5,7 +5,7 @@ input=$(cat)
 
 # --- Model ---
 model=$(echo "$input" | jq -r '.model.display_name // "Unknown"')
-effort=$(echo "$input" | jq -r '.model.effort // empty')
+effort=$(echo "$input" | jq -r '.effort.level // empty')
 
 # $1 = percentage (0-100), $2 = number of segments
 make_bar() {
