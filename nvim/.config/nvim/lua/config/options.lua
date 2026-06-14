@@ -51,3 +51,6 @@ opt.ignorecase = true
 opt.smartcase = true
 opt.incsearch = true
 opt.hlsearch = true
+
+-- Spell check
+opt.spelllang = "en,cjk"
