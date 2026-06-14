@@ -32,25 +32,78 @@
   "cleanupPeriodDays": 60,
   "includeCoAuthoredBy": false,
   "permissions": {
-    "allow": [],
+    "allow": [
+      "// 読み取り専用のBash操作（ファイルを変更しない）",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(diff:*)",
+      "Bash(rg:*)",
+      "Bash(file:*)",
+      "Bash(which:*)",
+      "Bash(echo:*)"
+    ],
     "deny": [
+      "// === 危険なBash操作 ===",
       "Bash(sudo:*)",
       "Bash(git reset:*)",
       "Bash(git rebase:*)",
+
+      "// ネットワーク通信ツール",
       "Bash(curl:*)",
       "Bash(wget:*)",
       "Bash(nc:*)",
+
+      "// パッケージ削除",
       "Bash(npm uninstall:*)",
       "Bash(npm remove:*)",
+
+      "// データベース操作",
       "Bash(psql:*)",
-      "Bash(mysql:&)",
+      "Bash(mysql:*)",
       "Bash(mongod:*)",
+
+      "// === 環境変数・設定ファイル ===",
       "Read(.env.*)",
+      "Write(.env*)",
+
+      "// === SSH鍵・証明書 ===",
+      "Read(**/.ssh/*)",
       "Read(id_rsa)",
+      "Read(id_ecdsa)",
       "Read(id_ed25519)",
+      "Read(id_dsa)",
+      "Read(*.pem)",
+      "Read(*.p12)",
+      "Read(*.key)",
+      "Read(**/.gnupg/*)",
+
+      "// === クラウド・ツール認証情報 ===",
+      "Read(**/.aws/credentials)",
+      "Read(**/.kube/config)",
+      "Read(**/.docker/config.json)",
+      "Read(**/.netrc)",
+      "Read(**/.git-credentials)",
+
+      "// === Java KeyStore ===",
+      "Read(*.jks)",
+      "Read(*.keystore)",
+
+      "// === インフラ状態ファイル（クレデンシャルを含む可能性） ===",
+      "Read(*.tfstate)",
+
+      "// === センシティブなファイル名パターン ===",
       "Read(**/*token*)",
       "Read(**/*_key*)",
-      "Write(.env*)",
+      "Read(**/*secret*)",
+      "Read(**/*SECRET*)",
+
+      "// === センシティブなディレクトリ ===",
+      "Read(**/secrets/**)",
       "Write(**/secrets/**)"
     ]
   },
