@@ -6,6 +6,8 @@
 # clear の場合は空文字列をセットして表示をリセットする
 set -u
 
+export PATH="/opt/homebrew/bin:$PATH"
+
 STATUS="${1:-}"
 
 # 引数バリデーション: 既知のステータス以外は何もしない
