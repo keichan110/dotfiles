@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/set-wezterm-status.sh working"
+            "command": "~/.claude/hooks/set-wezterm-status.sh working"
           }
         ]
       }
@@ -77,7 +77,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/set-wezterm-status.sh working"
+            "command": "~/.claude/hooks/set-wezterm-status.sh working"
           }
         ]
       }
@@ -87,7 +87,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/set-wezterm-status.sh waiting"
+            "command": "~/.claude/hooks/set-wezterm-status.sh waiting"
           }
         ]
       }
@@ -97,7 +97,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/set-wezterm-status.sh done"
+            "command": "~/.claude/hooks/set-wezterm-status.sh done"
           }
         ]
       }
@@ -107,7 +107,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/set-wezterm-status.sh clear"
+            "command": "~/.claude/hooks/set-wezterm-status.sh clear"
           }
         ]
       }
