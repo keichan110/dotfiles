@@ -15,7 +15,9 @@
       "Bash(rg:*)",
       "Bash(file:*)",
       "Bash(which:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Read(/tmp/claude-*/**)",
+      "Write(/tmp/claude-*/**)"
     ],
     "deny": [
       "Bash(sudo:*)",
