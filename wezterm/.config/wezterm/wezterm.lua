@@ -136,7 +136,7 @@ local CLAUDE_STATUS_COLORS = {
 }
 local TAB_WIDTH = 24
 
--- ペインIDごとの状態 { status = "working"|"waiting"|"done", epoch = number }
+-- ペインIDごとの状態 { status = "working"|"waiting"|"done" }
 local claude_states = {}
 
 -- user-var-changed: OSC 1337 SetUserVar=claude_state=... を受け取る
@@ -148,10 +148,7 @@ wezterm.on('user-var-changed', function(window, pane, name, value)
   else
     local ok, decoded = pcall(wezterm.base64_decode, value)
     if ok and decoded then
-      local status, epoch = decoded:match('^(.+):(%d+)$')
-      if status then
-        claude_states[pane_id] = { status = status, epoch = tonumber(epoch) }
-      end
+      claude_states[pane_id] = { status = decoded }
     end
   end
 end)

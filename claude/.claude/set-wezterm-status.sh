@@ -2,7 +2,7 @@
 # Claude Code のステータスを OSC 1337 user var で WezTerm に直接通知する
 # 引数: working | waiting | done | clear
 #
-# 値フォーマット: base64(STATUS:EPOCH_SEC)
+# 値フォーマット: base64(STATUS)
 # clear の場合は空文字列をセットして表示をリセットする
 set -u
 
@@ -32,8 +32,7 @@ fi
 if [ "$STATUS" = "clear" ]; then
   VALUE=""
 else
-  EPOCH=$(date +%s)
-  VALUE=$(printf '%s:%s' "$STATUS" "$EPOCH" | base64 | tr -d '\n')
+  VALUE=$(printf '%s' "$STATUS" | base64 | tr -d '\n')
 fi
 
 # 自ペインのttyを解決
