@@ -19,11 +19,11 @@ esac
 command -v wezterm >/dev/null 2>&1 || exit 0
 command -v jq      >/dev/null 2>&1 || exit 0
 
-# waiting: Notification hook のstdin JSONでpermission要求のみ通過させる
+# waiting: Notification hook のstdin JSONでpermission_prompt/idle_promptのみ通過させる
 if [ "$STATUS" = "waiting" ]; then
-  msg=$(cat | jq -r '.message // ""' 2>/dev/null)
-  case "$msg" in
-    *permission*) ;;
+  notification_type=$(cat | jq -r '.notification_type // ""' 2>/dev/null)
+  case "$notification_type" in
+    permission_prompt|idle_prompt) ;;
     *) exit 0 ;;
   esac
 fi
