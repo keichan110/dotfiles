@@ -146,10 +146,7 @@ wezterm.on('user-var-changed', function(window, pane, name, value)
   if value == '' then
     claude_states[pane_id] = nil
   else
-    local ok, decoded = pcall(wezterm.base64_decode, value)
-    if ok and decoded then
-      claude_states[pane_id] = { status = decoded }
-    end
+    claude_states[pane_id] = { status = value }
   end
 end)
 
