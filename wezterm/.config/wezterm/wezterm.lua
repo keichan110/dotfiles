@@ -163,8 +163,9 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
   local state = claude_states[pane_id]
   local status = state and state.status
 
-  -- フォーカスが戻ったタブの完了・待機状態をクリアしてデフォルト色に戻す
-  if status and (status == 'done' or status == 'waiting') and tab.is_active then
+  -- フォーカスが戻ったタブの完了状態をクリアしてデフォルト色に戻す
+  -- waiting はユーザーが応答するまで保持する（PostToolUse/Stop で上書きされる）
+  if status == 'done' and tab.is_active then
     claude_states[pane_id] = nil
     status = nil
   end
