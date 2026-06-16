@@ -142,6 +142,14 @@ color_bar() {
   fi
 }
 
+# $1 = percentage: キャッシュヒット率用の色を返す (0-64%: 色なし, 65-84%: 緑, 85-94%: シアン, 95%+: 青)
+cache_color() {
+  if [ "$1" -ge 95 ]; then printf '%s' "$C_BLUE"
+  elif [ "$1" -ge 85 ]; then printf '%s' "$C_CYAN"
+  elif [ "$1" -ge 65 ]; then printf '%s' "$C_GREEN"
+  fi
+}
+
 # --- Context window ---
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
 exceeds_200k=$(echo "$input" | jq -r '.exceeds_200k_tokens // false')
@@ -210,7 +218,9 @@ fi
 line1="[${model_str}] ${ctx_display}"
 
 if [ -n "$cache_pct" ]; then
-  line1="${line1} | cache: ${cache_pct}%"
+  cache_clr=$(cache_color "$cache_pct")
+  cache_pct_str="${cache_clr:+${cache_clr}}${cache_pct}%${cache_clr:+${C_RESET}}"
+  line1="${line1} | cache: ${cache_pct_str}"
 fi
 if [ -n "$cost_usd" ]; then
   cost_str=$(printf '$%.2f' "$cost_usd")
