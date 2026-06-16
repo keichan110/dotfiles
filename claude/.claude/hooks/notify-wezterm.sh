@@ -30,12 +30,14 @@ if [ "$STATUS" = "waiting" ]; then
   esac
 fi
 
-# sessionstart: /clear によるコンテキストリセット時のみ表示をクリアする
-# （/clear は SessionEnd ではなく SessionStart(source=clear) で発火するため）
+# sessionstart: /clear・/compact は SessionEnd ではなく SessionStart(source=clear|compact) で発火するため、
+# ここで表示を更新する。clearはコンテキストを空にする操作なので非表示、
+# compactは圧縮のみで会話は継続するため完了(done)扱いにする
 if [ "$STATUS" = "sessionstart" ]; then
   source_value=$(cat | jq -r '.source // ""' 2>/dev/null)
   case "$source_value" in
     clear) STATUS="clear" ;;
+    compact) STATUS="done" ;;
     *) exit 0 ;;
   esac
 fi
