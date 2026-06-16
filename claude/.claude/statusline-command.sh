@@ -16,6 +16,12 @@ C_CYAN=$(printf '\033[36m')
 C_BLUE=$(printf '\033[34m')
 C_RESET=$(printf '\033[0m')
 
+# モデルランク別の色（Claudeブランドカラー#D97757をOpusに合わせた濃淡、truecolor）
+C_MODEL_HAIKU=$(printf '\033[38;2;238;194;179m')
+C_MODEL_SONNET=$(printf '\033[38;2;227;153;129m')
+C_MODEL_OPUS=$(printf '\033[38;2;217;119;87m')
+C_MODEL_FABLE=$(printf '\033[38;2;130;71;52m')
+
 # $1 = percentage (0-100), $2 = number of segments
 make_bar() {
   pct_val="$1"
@@ -142,6 +148,16 @@ color_bar() {
   fi
 }
 
+# $1 = model display name: モデルランクに応じた色を返す（該当なしは無色）
+model_color() {
+  case "$1" in
+    *Fable*) printf '%s' "$C_MODEL_FABLE" ;;
+    *Opus*) printf '%s' "$C_MODEL_OPUS" ;;
+    *Sonnet*) printf '%s' "$C_MODEL_SONNET" ;;
+    *Haiku*) printf '%s' "$C_MODEL_HAIKU" ;;
+  esac
+}
+
 # $1 = percentage: キャッシュヒット率用の色を返す (0-64%: 色なし, 65-84%: 緑, 85-94%: シアン, 95%+: 青)
 cache_color() {
   if [ "$1" -ge 95 ]; then printf '%s' "$C_BLUE"
@@ -200,10 +216,16 @@ pr_number=$(echo "$input" | jq -r '.pr.number // empty')
 pr_state=$(echo "$input" | jq -r '.pr.review_state // empty')
 
 # --- Line 1: [Model (effort)] ctx | cache | $cost | branch(#PR|state) ---
-if [ -n "$effort" ]; then
-  model_str="${model} (${effort})"
+model_clr=$(model_color "$model")
+if [ -n "$model_clr" ]; then
+  model_display="${model_clr}${model}${C_RESET}"
 else
-  model_str="${model}"
+  model_display="${model}"
+fi
+if [ -n "$effort" ]; then
+  model_str="${model_display} (${effort})"
+else
+  model_str="${model_display}"
 fi
 
 branch_display="$branch"
