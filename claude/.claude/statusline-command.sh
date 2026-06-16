@@ -22,6 +22,13 @@ C_MODEL_SONNET=$(printf '\033[38;2;227;153;129m')
 C_MODEL_OPUS=$(printf '\033[38;2;217;119;87m')
 C_MODEL_FABLE=$(printf '\033[38;2;130;71;52m')
 
+# effortレベル別の色（Claudeブランドカラー#D97757をhighに合わせた濃淡、truecolor）
+C_EFFORT_LOW=$(printf '\033[38;2;242;207;196m')
+C_EFFORT_MEDIUM=$(printf '\033[38;2;229;163;141m')
+C_EFFORT_HIGH=$(printf '\033[38;2;217;119;87m')
+C_EFFORT_XHIGH=$(printf '\033[38;2;169;93;68m')
+C_EFFORT_MAX=$(printf '\033[38;2;119;65;48m')
+
 # $1 = percentage (0-100), $2 = number of segments
 make_bar() {
   pct_val="$1"
@@ -158,6 +165,17 @@ model_color() {
   esac
 }
 
+# $1 = effort level: effortランクに応じた色を返す（該当なしは無色）
+effort_color() {
+  case "$1" in
+    max) printf '%s' "$C_EFFORT_MAX" ;;
+    xhigh) printf '%s' "$C_EFFORT_XHIGH" ;;
+    high) printf '%s' "$C_EFFORT_HIGH" ;;
+    medium) printf '%s' "$C_EFFORT_MEDIUM" ;;
+    low) printf '%s' "$C_EFFORT_LOW" ;;
+  esac
+}
+
 # $1 = percentage: キャッシュヒット率用の色を返す (0-64%: 色なし, 65-84%: 緑, 85-94%: シアン, 95%+: 青)
 cache_color() {
   if [ "$1" -ge 95 ]; then printf '%s' "$C_BLUE"
@@ -223,7 +241,13 @@ else
   model_display="${model}"
 fi
 if [ -n "$effort" ]; then
-  model_str="${model_display} (${effort})"
+  effort_clr=$(effort_color "$effort")
+  if [ -n "$effort_clr" ]; then
+    effort_display="${effort_clr}${effort}${C_RESET}"
+  else
+    effort_display="${effort}"
+  fi
+  model_str="${model_display} (${effort_display})"
 else
   model_str="${model_display}"
 fi
