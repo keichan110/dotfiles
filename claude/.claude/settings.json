@@ -16,6 +16,8 @@
       "Bash(file:*)",
       "Bash(which:*)",
       "Bash(echo:*)",
+      "Bash(git log:*)",
+      "Bash(git commit:*)",
       "Read(/tmp/claude-*/**)",
       "Write(/tmp/claude-*/**)"
     ],
