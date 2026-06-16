@@ -113,6 +113,16 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/notify-wezterm.sh sessionstart"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

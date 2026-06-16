@@ -1,6 +1,6 @@
 #!/bin/bash
 # Claude Code のステータスを OSC 1337 user var で WezTerm に直接通知する
-# 引数: working | waiting | done | clear
+# 引数: working | waiting | done | clear | sessionstart
 #
 # 値フォーマット: base64(STATUS)
 # clear の場合は空文字列をセットして表示をリセットする
@@ -12,7 +12,7 @@ STATUS="${1:-}"
 
 # 引数バリデーション: 既知のステータス以外は何もしない
 case "$STATUS" in
-  working|waiting|done|clear) ;;
+  working|waiting|done|clear|sessionstart) ;;
   *) exit 0 ;;
 esac
 
@@ -26,6 +26,16 @@ if [ "$STATUS" = "waiting" ]; then
   notification_type=$(cat | jq -r '.notification_type // ""' 2>/dev/null)
   case "$notification_type" in
     permission_prompt|idle_prompt) ;;
+    *) exit 0 ;;
+  esac
+fi
+
+# sessionstart: /clear によるコンテキストリセット時のみ表示をクリアする
+# （/clear は SessionEnd ではなく SessionStart(source=clear) で発火するため）
+if [ "$STATUS" = "sessionstart" ]; then
+  source_value=$(cat | jq -r '.source // ""' 2>/dev/null)
+  case "$source_value" in
+    clear) STATUS="clear" ;;
     *) exit 0 ;;
   esac
 fi
