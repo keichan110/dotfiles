@@ -95,8 +95,8 @@ config.window_close_confirmation = 'NeverPrompt'
 
 -- Pane
 config.inactive_pane_hsb = {
-  saturation = 0.5,
-  brightness = 0.4,
+  saturation = 0.45,
+  brightness = 0.75,
 }
 
 -- Keybindings
