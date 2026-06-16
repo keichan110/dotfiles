@@ -148,16 +148,14 @@ exceeds_200k=$(echo "$input" | jq -r '.exceeds_200k_tokens // false')
 if [ -n "$used_pct" ]; then
   used_int=$(printf '%.0f' "$used_pct")
   ctx_bar=$(make_bar "$used_int" 20)
-  if [ "$used_int" -lt 30 ]; then
-    bar_color=""
-  elif [ "$used_int" -ge 85 ]; then
+  if [ "$used_int" -ge 85 ]; then
     bar_color="$C_RED"
   elif [ "$used_int" -ge 70 ]; then
     bar_color="$C_ORANGE"
   elif [ "$used_int" -ge 50 ]; then
     bar_color="$C_YELLOW"
   else
-    bar_color="$C_GREEN"
+    bar_color=""
   fi
   if [ -n "$bar_color" ]; then
     ctx_display="${bar_color}${ctx_bar}${C_RESET} ${used_int}%"
