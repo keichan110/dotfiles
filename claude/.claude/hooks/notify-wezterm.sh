@@ -23,7 +23,8 @@ command -v jq      >/dev/null 2>&1 || exit 0
 
 # waiting: Notification hook のstdin JSONでpermission_prompt/idle_promptのみ通過させる
 if [ "$STATUS" = "waiting" ]; then
-  notification_type=$(cat | jq -r '.notification_type // ""' 2>/dev/null)
+  stdin_content=$(cat 2>/dev/null)
+  notification_type=$(printf '%s' "$stdin_content" | jq -r '.notification_type // ""' 2>/dev/null)
   case "$notification_type" in
     permission_prompt|idle_prompt) ;;
     *) exit 0 ;;
@@ -34,7 +35,8 @@ fi
 # ここで表示を更新する。clearはコンテキストを空にする操作なので非表示、
 # compactは圧縮のみで会話は継続するため完了(done)扱いにする
 if [ "$STATUS" = "sessionstart" ]; then
-  source_value=$(cat | jq -r '.source // ""' 2>/dev/null)
+  stdin_content=$(cat 2>/dev/null)
+  source_value=$(printf '%s' "$stdin_content" | jq -r '.source // ""' 2>/dev/null)
   case "$source_value" in
     clear) STATUS="clear" ;;
     compact) STATUS="done" ;;
