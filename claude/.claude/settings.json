@@ -84,7 +84,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/notify-wezterm.sh working"
+            "command": "~/.claude/hooks/notify-wezterm.sh userprompt"
           }
         ]
       }
