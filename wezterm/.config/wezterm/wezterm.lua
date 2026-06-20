@@ -79,7 +79,7 @@ config.font = wezterm.font_with_fallback {
   { family = 'Cica',             weight = 'Regular', style = 'Normal' },
   { family = 'JetBrains Mono',   weight = 'Regular', style = 'Normal' },
 }
-config.font_size = 15
+config.font_size = 16
 
 -- Cursor
 config.default_cursor_style = 'BlinkingBlock'
