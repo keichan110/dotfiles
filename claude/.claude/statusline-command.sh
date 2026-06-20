@@ -146,6 +146,78 @@ pace_bar() {
   printf '%s│%s' "$left" "$right"
 }
 
+# $1=actual_pct(int), $2=resets_at(unix ts), $3=window_sec, $4=segs, $5=min_elapsed_sec
+# 7d用バーンダウンバー: 絶対使用率の塗り＋動く理想ペースマーカー(┊)
+# 左振れ(余裕)は無色で沈黙、超過ペース時のみ暖色で警告
+burndown_bar() {
+  actual="$1"
+  resets_ts="$2"
+  window_sec="$3"
+  segs="${4:-14}"
+  min_elapsed="${5:-3600}"
+
+  now=$(date +%s)
+  remaining=$(( resets_ts - now ))
+  if [ "$remaining" -lt 0 ]; then remaining=0; fi
+  if [ "$remaining" -gt "$window_sec" ]; then remaining=$window_sec; fi
+  elapsed=$(( window_sec - remaining ))
+
+  # マーカー位置: round(elapsed/window * segs)
+  half_window=$(( window_sec / 2 ))
+  marker_pos=$(( (elapsed * segs + half_window) / window_sec ))
+  if [ "$marker_pos" -gt "$segs" ]; then marker_pos=$segs; fi
+
+  # 早期ガード: データ不足時は中立バー（色なし）
+  if [ "$elapsed" -lt "$min_elapsed" ]; then
+    bar=""; i=0
+    while [ "$i" -lt "$segs" ]; do
+      if [ "$i" -eq "$marker_pos" ]; then bar="${bar}┊"; fi
+      bar="${bar}▱"
+      i=$(( i + 1 ))
+    done
+    if [ "$marker_pos" -eq "$segs" ]; then bar="${bar}┊"; fi
+    printf '%s' "$bar"
+    return
+  fi
+
+  # 現ペースで継続した場合の投影使用率
+  if [ "$elapsed" -gt 0 ]; then
+    projected=$(( actual * window_sec / elapsed ))
+  else
+    projected=100
+  fi
+
+  # 暖色のみ（左振れ=余裕は無色で沈黙）
+  if   [ "$projected" -gt 150 ]; then clr="$C_RED"
+  elif [ "$projected" -gt 120 ]; then clr="$C_ORANGE"
+  elif [ "$projected" -gt 105 ]; then clr="$C_YELLOW"
+  else                                  clr=""
+  fi
+
+  # 塗りセル数: ceil(actual * segs / 100)
+  filled=$(( (actual * segs + 99) / 100 ))
+  if [ "$filled" -gt "$segs" ]; then filled=$segs; fi
+
+  # バー構築: marker_pos 境界にマーカー┊を挿入
+  bar=""; i=0
+  while [ "$i" -lt "$segs" ]; do
+    if [ "$i" -eq "$marker_pos" ]; then bar="${bar}┊"; fi
+    if [ "$i" -lt "$filled" ]; then
+      if [ -n "$clr" ]; then
+        bar="${bar}${clr}▰${C_RESET}"
+      else
+        bar="${bar}▰"
+      fi
+    else
+      bar="${bar}▱"
+    fi
+    i=$(( i + 1 ))
+  done
+  if [ "$marker_pos" -eq "$segs" ]; then bar="${bar}┊"; fi
+
+  printf '%s' "$bar"
+}
+
 # $1 = bar string, $2 = color string
 color_bar() {
   if [ -n "$2" ]; then
@@ -312,7 +384,7 @@ if [ -n "$seven_pct" ]; then
   seven_clr=$(rate_color "$seven_int")
   seven_pct_str="${seven_clr:+${seven_clr}}${seven_int}%${seven_clr:+${C_RESET}}"
   if [ -n "$seven_reset" ]; then
-    seven_bar=$(pace_bar "$seven_int" "$seven_reset" 604800 7 3600)
+    seven_bar=$(burndown_bar "$seven_int" "$seven_reset" 604800 14 3600)
     seven_time=$(date -r "$seven_reset" "+%-m/%-d %H:%M" 2>/dev/null || date -d "@${seven_reset}" "+%-m/%-d %H:%M" 2>/dev/null || echo "")
     seven_str="7d: ${seven_bar} ${seven_pct_str} (~${seven_time})"
   else
