@@ -20,4 +20,6 @@ if [[ -t 1 ]]; then
   alias ls='eza'
   # bat
   alias cat='bat'
+  # workspace
+  alias wks='~/.config/wezterm/workspace.sh'
 fi
