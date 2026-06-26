@@ -30,3 +30,4 @@ right_pane=$(wezterm cli split-pane --right --cells "$right_cells" --pane-id "$W
 
 printf 'nvim .\n' | wezterm cli send-text --pane-id "$right_pane" --no-paste
 printf 'claude\n' | wezterm cli send-text --pane-id "$WEZTERM_PANE" --no-paste
+wezterm cli activate-pane --pane-id "$WEZTERM_PANE"
