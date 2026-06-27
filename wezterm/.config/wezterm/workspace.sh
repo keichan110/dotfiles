@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+readonly fixed_left=130  # 左ペイン（Claude Code）の列数
+
 if [[ -z "$WEZTERM_PANE" ]]; then
   echo "Error: WezTerm の外から実行されています" >&2
   exit 1
@@ -17,8 +19,7 @@ fi
 
 total_cols=$(echo "$pane_info" | jq --argjson id "$WEZTERM_PANE" '.[] | select(.pane_id == $id) | .size.cols')
 
-readonly fixed_left=120
-if [[ $total_cols -ge 240 ]]; then
+if [[ $total_cols -ge $(( fixed_left * 2 )) ]]; then
   right_cells=$(( total_cols - fixed_left ))
 else
   right_cells=$(( total_cols / 2 ))
