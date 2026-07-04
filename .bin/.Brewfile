@@ -29,6 +29,7 @@ brew "mise"
 brew "starship"
 brew "zoxide"
 brew "atuin"
+brew "herdr"
 
 # Desktop App
 cask "visual-studio-code"
