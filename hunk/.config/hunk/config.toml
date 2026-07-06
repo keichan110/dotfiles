@@ -1,0 +1,51 @@
+# hunk configuration
+# Place this file at ~/.config/hunk/config.toml
+
+# Built-in theme id, "auto", or "custom".
+# "auto" queries the terminal background at startup and chooses
+# github-light-default / github-dark-default accordingly.
+# theme = "github-dark-default"
+
+# Layout mode: "auto", "split", or "stack".
+# mode = "auto"
+
+# Version control system to use: "git", "jj", or "sl".
+# Hunk auto-detects Jujutsu/Sapling checkouts; override here if needed.
+# vcs = "git"
+
+# Auto-reload the review as the working tree changes.
+# watch = false
+
+# Exclude untracked files from Git/Sapling working-tree `hunk diff` sessions.
+# exclude_untracked = false
+
+# Show line numbers in the diff view.
+# line_numbers = true
+
+# Wrap long lines instead of scrolling horizontally.
+# wrap_lines = false
+
+# Show the menu bar.
+# menu_bar = true
+
+# Show inline AI/agent annotations beside the code.
+# agent_notes = false
+
+# Render panels with a transparent background (also accepted as transparentBackground).
+# transparent_background = false
+
+# Custom theme definition. Inherits from any built-in theme and overrides
+# only the colors you care about. All colors must use #rrggbb hex values.
+# [custom_theme]
+# base = "catppuccin-mocha"
+# label = "My Theme"
+# accent = "#7fd1ff"
+# panel = "#10161d"
+# noteBorder = "#c49bff"
+#
+# [custom_theme.syntax]
+# keyword = "#8ed4ff"
+# string = "#c7b4ff"
+# comment = "#6e85a7"
+# operator = "#7fd1ff"
+# variable = "#eef4ff"
