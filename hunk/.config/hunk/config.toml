@@ -4,7 +4,7 @@
 # Built-in theme id, "auto", or "custom".
 # "auto" queries the terminal background at startup and chooses
 # github-light-default / github-dark-default accordingly.
-# theme = "github-dark-default"
+theme = "nord"
 
 # Layout mode: "auto", "split", or "stack".
 # mode = "auto"
@@ -14,7 +14,7 @@
 # vcs = "git"
 
 # Auto-reload the review as the working tree changes.
-# watch = false
+watch = true
 
 # Exclude untracked files from Git/Sapling working-tree `hunk diff` sessions.
 # exclude_untracked = false
@@ -23,16 +23,16 @@
 # line_numbers = true
 
 # Wrap long lines instead of scrolling horizontally.
-# wrap_lines = false
+wrap_lines = true
 
 # Show the menu bar.
 # menu_bar = true
 
 # Show inline AI/agent annotations beside the code.
-# agent_notes = false
+agent_notes = true
 
 # Render panels with a transparent background (also accepted as transparentBackground).
-# transparent_background = false
+# transparent_background = true
 
 # Custom theme definition. Inherits from any built-in theme and overrides
 # only the colors you care about. All colors must use #rrggbb hex values.
